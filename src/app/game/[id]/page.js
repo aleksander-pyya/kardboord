@@ -1,7 +1,7 @@
 "use client";
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Star, Clock, Check, Library, ShoppingCart, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Star, Check, Library, ShoppingCart, ExternalLink, Share2 } from 'lucide-react';
 
 export default function GameDetail() {
   const { id } = useParams();
@@ -50,91 +50,85 @@ export default function GameDetail() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-12 font-sans tracking-tight">
+    <main className="min-h-screen bg-[#050505] text-white p-4 md:p-12 font-sans tracking-tight">
       <div className="max-w-6xl mx-auto">
-        <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-500 hover:text-white transition-all mb-12 group uppercase text-[10px] font-black tracking-[0.2em]">
-          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          Tagasi
+        
+        {/* Tagasi nupp - väiksem mobiilis */}
+        <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-500 hover:text-white transition-all mb-6 md:mb-12 uppercase text-[9px] font-black tracking-widest">
+          <ArrowLeft size={14} /> Tagasi
         </button>
 
-        <div className="grid lg:grid-cols-[450px_1fr] gap-16">
-          {/* VASAK POOL: Pilt ja Ostmine */}
-          <div className="space-y-8">
-            <div className="relative aspect-[2/3] rounded-[2rem] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 group">
-              <img src={game.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt={game.name} />
+        <div className="grid lg:grid-cols-[400px_1fr] gap-8 md:gap-16">
+          
+          {/* VASAK POOL: Pilt ja Ostunupud */}
+          <div className="space-y-6">
+            <div className="relative aspect-[4/3] md:aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+              <img src={game.image} className="w-full h-full object-cover" alt={game.name} />
             </div>
 
-            {/* --- OSTMISE SEKTSIOON --- */}
-            <div className="bg-[#111] p-8 rounded-[2rem] border border-white/5 space-y-6 shadow-2xl">
+            {/* OSTMISE SEKTSIOON - Kompaktne mobiilis */}
+            <div className="bg-[#111] p-5 md:p-8 rounded-3xl border border-white/5 space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <ShoppingCart className="text-orange-500" size={20} />
-                  <h3 className="font-black uppercase italic text-sm tracking-wider">Osta mäng</h3>
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="text-orange-500" size={16} />
+                  <h3 className="font-black uppercase italic text-[10px] tracking-wider">Osta mäng</h3>
                 </div>
-                <span className="text-xl font-black text-white">al. {game.price}€</span>
+                <span className="text-lg font-black text-white">{game.price}€</span>
               </div>
               
-              <div className="space-y-3">
-                <a href="#" className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all group border border-white/5">
-                  <span className="font-bold text-sm">Brain Games</span>
-                  <div className="flex items-center gap-3 text-orange-500">
-                    <span className="text-xs font-black">{game.price}€</span>
-                    <ExternalLink size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                  </div>
-                </a>
-                <a href="#" className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all group border border-white/5 opacity-60">
-                  <span className="font-bold text-sm">Ludo.ee</span>
-                  <div className="flex items-center gap-3 text-orange-500">
-                    <span className="text-xs font-black">{(parseFloat(game.price) + 2).toFixed(2)}€</span>
-                    <ExternalLink size={14} />
-                  </div>
+              <div className="grid grid-cols-1 gap-2">
+                <a href="#" className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+                  <span className="font-bold text-xs uppercase tracking-tighter">Brain Games</span>
+                  <ExternalLink size={12} className="text-orange-500" />
                 </a>
               </div>
             </div>
           </div>
           
-          {/* PAREM POOL: Info ja Tegevused */}
-          <div className="flex flex-col pt-4">
-            <div className="flex items-center gap-3 mb-6">
-              <span className="bg-orange-600/20 text-orange-500 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase border border-orange-500/20">{game.year}</span>
-              {alreadyInLibrary && <span className="flex items-center gap-1 text-green-500 text-[10px] font-black uppercase tracking-widest"><Check size={14} /> Teie valik</span>}
+          {/* PAREM POOL: Info */}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="bg-orange-600/20 text-orange-500 px-3 py-1 rounded-full text-[9px] font-black uppercase border border-orange-500/20">{game.year}</span>
             </div>
 
-            <h1 className="text-7xl font-black italic uppercase tracking-tighter mb-8 leading-[0.9]">{game.name}</h1>
-            <p className="text-gray-400 text-xl leading-relaxed mb-12 max-w-xl font-medium">{game.desc}</p>
+            {/* Pealkiri: 3xl mobiilis, 7xl desktopis */}
+            <h1 className="text-3xl md:text-7xl font-black italic uppercase tracking-tighter mb-4 md:mb-8 leading-tight">{game.name}</h1>
+            
+            <p className="text-gray-400 text-sm md:text-xl leading-relaxed mb-8 md:mb-12 font-medium opacity-80">{game.desc}</p>
 
-            <div className="space-y-8 bg-white/[0.02] p-8 rounded-[2rem] border border-white/5">
-              <div className="flex flex-wrap gap-4">
+            {/* TEGEVUSED */}
+            <div className="space-y-6 bg-white/[0.03] p-5 md:p-8 rounded-3xl border border-white/5">
+              <div className="flex flex-col sm:flex-row gap-3">
                 {!alreadyInLibrary ? (
-                  <button onClick={addToCollection} className="bg-orange-600 hover:bg-orange-500 text-white font-black py-5 px-10 rounded-2xl transition-all active:scale-95 flex items-center gap-3 shadow-xl shadow-orange-600/20 text-xs uppercase tracking-widest">
-                    <Library size={20} /> Lisa riiulisse
+                  <button onClick={addToCollection} className="bg-orange-600 text-white font-black py-4 px-8 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest shadow-lg shadow-orange-600/20 w-full">
+                    <Library size={18} /> Lisa riiulisse
                   </button>
                 ) : (
-                  <div className="flex items-center gap-3 bg-green-600/20 border border-green-500/30 text-green-500 font-black py-5 px-10 rounded-2xl text-xs uppercase tracking-widest shadow-inner">
-                    <Check size={20} strokeWidth={3} /> Mäng on salvestatud
+                  <div className="flex items-center justify-center gap-2 bg-green-600/20 border border-green-500/30 text-green-500 font-black py-4 px-8 rounded-2xl text-[10px] uppercase tracking-widest w-full">
+                    <Check size={18} /> Salvestatud
                   </div>
                 )}
-                <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Link kopeeritud!"); }} className="bg-white/5 hover:bg-white/10 text-white border border-white/10 font-black py-5 px-8 rounded-2xl flex items-center gap-3 text-xs uppercase tracking-widest transition-all">
-                  Jaga sõpradega
+                <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Link kopeeritud!"); }} className="bg-white/5 text-white border border-white/10 font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest w-full sm:w-auto">
+                  <Share2 size={18} />
                 </button>
               </div>
 
-              {/* HINNANG JA STAATUS */}
-              <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-700 ${alreadyInLibrary ? 'opacity-100 translate-y-0' : 'opacity-20 pointer-events-none translate-y-4'}`}>
-                <div className="bg-black/40 p-6 rounded-2xl border border-white/5">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-600 mb-5">Sinu hinnang</p>
+              {/* HINNANG JA STAATUS - Kõrvuti ka mobiilis */}
+              <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 transition-all duration-700 ${alreadyInLibrary ? 'opacity-100' : 'opacity-10 pointer-events-none'}`}>
+                <div className="bg-black/40 p-4 rounded-2xl border border-white/5">
+                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3">Sinu hinnang</p>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} size={28} className="cursor-pointer transition-all hover:scale-125 active:scale-90" fill={star <= userRating ? "#f97316" : "none"} stroke={star <= userRating ? "#f97316" : "currentColor"} onClick={() => { setUserRating(star); updateGameInLibrary({ rating: star }); }} />
+                      <Star key={star} size={20} className="cursor-pointer" fill={star <= userRating ? "#f97316" : "none"} stroke={star <= userRating ? "#f97316" : "currentColor"} onClick={() => { setUserRating(star); updateGameInLibrary({ rating: star }); }} />
                     ))}
                   </div>
                 </div>
 
-                <div className="bg-black/40 p-6 rounded-2xl border border-white/5">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-600 mb-5">Mängu staatus</p>
-                  <div className="flex gap-3">
-                    <button onClick={() => { setGameStatus('wishlist'); updateGameInLibrary({ status: 'wishlist' }); }} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${gameStatus === 'wishlist' ? 'bg-orange-600 text-white shadow-lg' : 'bg-white/5 text-gray-500'}`}>Mänguootel</button>
-                    <button onClick={() => { setGameStatus('played'); updateGameInLibrary({ status: 'played' }); }} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${gameStatus === 'played' ? 'bg-green-600 text-white shadow-lg' : 'bg-white/5 text-gray-500'}`}>Mängitud</button>
+                <div className="bg-black/40 p-4 rounded-2xl border border-white/5">
+                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3">Staatus</p>
+                  <div className="flex gap-2">
+                    <button onClick={() => { setGameStatus('wishlist'); updateGameInLibrary({ status: 'wishlist' }); }} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${gameStatus === 'wishlist' ? 'bg-orange-600 text-white' : 'bg-white/5 text-gray-500'}`}>Ootel</button>
+                    <button onClick={() => { setGameStatus('played'); updateGameInLibrary({ status: 'played' }); }} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${gameStatus === 'played' ? 'bg-green-600 text-white' : 'bg-white/5 text-gray-500'}`}>Tehtud</button>
                   </div>
                 </div>
               </div>
