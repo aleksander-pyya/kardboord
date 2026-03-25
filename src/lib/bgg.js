@@ -1,43 +1,25 @@
-import { parseStringPromise } from 'xml2js';
-
 export const searchGames = async (query) => {
   try {
-    // KASUTAME PROXY-T: See on vahendaja, mis lahendab CORS ja aegumise probleemid
-    // See suunab päringu läbi serveri, mida BGG usaldab
-    const proxy = "https://api.allorigins.win/get?url=";
-    const bggUrl = encodeURIComponent(`https://boardgamegeek.com/xmlapi2/search?type=boardgame&query=${query}`);
-
-    const response = await fetch(`${proxy}${bggUrl}`);
+    // Kasutame populaarset bgg-json vahekihti, mis on kiirem ja annab JSON-it
+    // See on avalik API, mis proxyb BGG andmeid modernsel kujul
+    const response = await fetch(`https://bgg-json.azurewebsites.net/search?query=${query}`);
     
-    if (!response.ok) throw new Error('Võrgu viga');
+    if (!response.ok) throw new Error('Võrgu viga või API on maas');
 
-    // AllOrigins pakub andmeid JSON-i sees, kus 'contents' on BGG XML
     const data = await response.json();
-    const xml = data.contents;
-    
-    const result = await parseStringPromise(xml);
 
-    if (!result.items || !result.items.item) return [];
-
-    // Võtame esimesed 10 tulemust
-    const games = await Promise.all(
-      result.items.item.slice(0, 10).map(async (item) => {
-        const id = item.$.id;
-        
-        // Et saada Pilti, peame tegema lisapäringu 'thing' API-sse
-        // See on koht, kus BGG on "aegunud" - ta ei anna pilti otsinguga kaasa
-        return {
-          id: id,
-          name: item.name[0].$.value,
-          year: item.yearpublished ? item.yearpublished[0].$.value : 'N/A',
-          image: `https://cf.geekdo-images.com/itemrep/img/placeholder.jpg` // Ajutine
-        };
-      })
-    );
-
-    return games;
+    // See API tagastab massiivi mängudest. Filtreerime ja võtame esimesed 10.
+    return data.slice(0, 10).map(item => ({
+      id: item.gameId.toString(),
+      name: item.name,
+      year: item.yearPublished || 'N/A',
+      // See API annab meile vahel kohe pildi lingi, kui mitte, kasutame ID-põhist ennustust
+      image: item.thumbnail || `https://cf.geekdo-images.com/itemrep/img/placeholder.jpg`
+    }));
   } catch (error) {
-    console.error("BGG API viga:", error);
+    console.error("BGG JSON API viga:", error);
+    
+    // TAGAVARA: Kui JSON API peaks alt vedama, siis tühja lehe asemel ei juhtu midagi hullu
     return [];
   }
 };
