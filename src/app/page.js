@@ -76,7 +76,7 @@ export default function Home() {
               type="text" 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="SEARCH FOR BOARD GAMES..." 
+              placeholder="SEARCH GAMES..." 
               className="bg-transparent border-b-4 border-white/10 py-8 md:py-16 w-full outline-none focus:border-orange-600 transition-all text-3xl md:text-7xl font-black tracking-tighter placeholder:text-white/5 uppercase italic"
             />
             <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-6">

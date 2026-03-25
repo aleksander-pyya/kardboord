@@ -12,9 +12,9 @@ export default function GameDetail() {
   const [gameStatus, setGameStatus] = useState(null);
 
   const demoGames = [
-    { id: "13", name: "Catan", image: "/catan.jpg", year: "1995", desc: "Klassikaline strateegiamäng, kus kaubeldakse ressurssidega.", price: "34.99" },
-    { id: "233078", name: "Wingspan", image: "/wingspan.jpg", year: "2019", desc: "Kaunis lauamäng lindude kogumisest ja pesitsemisest.", price: "49.50" },
-    { id: "1406", name: "Monopoly", image: "/monopoly.jpg", year: "1933", desc: "Kinnisvaramäng, mis on tuntud peretülide poolest.", price: "24.90" },
+    { id: "13", name: "Catan", image: "/catan.jpg", year: "1995", desc: "Embark on a journey to settle the uncharted island of Catan. In this modern classic, players compete to build settlements, roads, and cities by trading and managing resources like wool, grain, and lumber. Success depends on clever placement, shrewd trading, and a bit of luck with the dice. The race to 10 victory points starts here!", price: "34.99" },
+    { id: "233078", name: "Wingspan", image: "/wingspan.jpg", year: "2019", desc: "An award-winning, beautiful strategy game about bird enthusiasts—researchers, bird watchers, and collectors—seeking to discover and attract the best birds to their network of wildlife preserves. Each bird extends a chain of powerful combinations in your habitats. High-quality components and stunning artwork make this a peaceful yet deeply strategic engine-building experience", price: "49.50" },
+    { id: "1406", name: "Monopoly", image: "/monopoly.jpg", year: "1933", desc: "The world’s most famous real estate board game. Players buy, sell, and scheme their way to fortune as they move around the board, building houses and hotels on properties while collecting rent from opponents. A high-stakes game of luck and negotiation where the goal is simple: bankrupt your rivals and own it all.", price: "24.90" },
     { id: "174430", name: "Gloomhaven", image: "/catan.jpg", year: "2017", desc: "Massiivne taktikaline koopaseiklus sügava looga.", price: "120.00" }
   ];
 
@@ -55,7 +55,7 @@ export default function GameDetail() {
         
         {/* Tagasi nupp - väiksem mobiilis */}
         <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-500 hover:text-white transition-all mb-6 md:mb-12 uppercase text-[9px] font-black tracking-widest">
-          <ArrowLeft size={14} /> Tagasi
+          <ArrowLeft size={14} /> Return
         </button>
 
         <div className="grid lg:grid-cols-[400px_1fr] gap-8 md:gap-16">
@@ -71,7 +71,7 @@ export default function GameDetail() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShoppingCart className="text-orange-500" size={16} />
-                  <h3 className="font-black uppercase italic text-[10px] tracking-wider">Osta mäng</h3>
+                  <h3 className="font-black uppercase italic text-[10px] tracking-wider">Buy the board game</h3>
                 </div>
                 <span className="text-lg font-black text-white">{game.price}€</span>
               </div>
@@ -101,14 +101,14 @@ export default function GameDetail() {
               <div className="flex flex-col sm:flex-row gap-3">
                 {!alreadyInLibrary ? (
                   <button onClick={addToCollection} className="bg-orange-600 text-white font-black py-4 px-8 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest shadow-lg shadow-orange-600/20 w-full">
-                    <Library size={18} /> Lisa riiulisse
+                    <Library size={18} /> Add to shelf
                   </button>
                 ) : (
                   <div className="flex items-center justify-center gap-2 bg-green-600/20 border border-green-500/30 text-green-500 font-black py-4 px-8 rounded-2xl text-[10px] uppercase tracking-widest w-full">
-                    <Check size={18} /> Salvestatud
+                    <Check size={18} /> Added to your shelf
                   </div>
                 )}
-                <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Link kopeeritud!"); }} className="bg-white/5 text-white border border-white/10 font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest w-full sm:w-auto">
+                <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Link copied!"); }} className="bg-white/5 text-white border border-white/10 font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest w-full sm:w-auto">
                   <Share2 size={18} />
                 </button>
               </div>
@@ -116,7 +116,7 @@ export default function GameDetail() {
               {/* HINNANG JA STAATUS - Kõrvuti ka mobiilis */}
               <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 transition-all duration-700 ${alreadyInLibrary ? 'opacity-100' : 'opacity-10 pointer-events-none'}`}>
                 <div className="bg-black/40 p-4 rounded-2xl border border-white/5">
-                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3">Sinu hinnang</p>
+                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3">Your rating</p>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star key={star} size={20} className="cursor-pointer" fill={star <= userRating ? "#f97316" : "none"} stroke={star <= userRating ? "#f97316" : "currentColor"} onClick={() => { setUserRating(star); updateGameInLibrary({ rating: star }); }} />
@@ -125,7 +125,7 @@ export default function GameDetail() {
                 </div>
 
                 <div className="bg-black/40 p-4 rounded-2xl border border-white/5">
-                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3">Staatus</p>
+                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3">Status</p>
                   <div className="flex gap-2">
                     <button onClick={() => { setGameStatus('wishlist'); updateGameInLibrary({ status: 'wishlist' }); }} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${gameStatus === 'wishlist' ? 'bg-orange-600 text-white' : 'bg-white/5 text-gray-500'}`}>Mänguootel</button>
                     <button onClick={() => { setGameStatus('played'); updateGameInLibrary({ status: 'played' }); }} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${gameStatus === 'played' ? 'bg-green-600 text-white' : 'bg-white/5 text-gray-500'}`}>Mängitud</button>
