@@ -119,16 +119,41 @@ export default function Home() {
         {/* 3. KASUTAJA RIIUL */}
         {(wishlistGames.length > 0 || playedGames.length > 0) && (
           <section className="border-t border-white/10 pt-20">
-             <h2 className="text-xs font-black uppercase tracking-[0.5em] text-white/20 mb-12">Sinu Riitused</h2>
-             <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
+             <div className="flex items-center justify-between mb-12">
+               <h2 className="text-xs font-black uppercase tracking-[0.5em] text-white/20 text-orange-600">Sinu Riiul</h2>
+               <span className="text-[10px] font-bold text-white/10 uppercase italic">{myLibrary.length} mängu kokku</span>
+             </div>
+
+             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-6 md:gap-10">
                 {myLibrary.map(game => (
-                  <Link href={`/game/${game.id}`} key={game.id} className="group">
-                    <div className="aspect-[2/3] bg-white/5 rounded-sm overflow-hidden mb-4 relative">
-                      <img src={game.image} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all" />
-                      {game.status === 'played' && <div className="absolute top-2 left-2 w-2 h-2 bg-green-500 rounded-full"></div>}
+                  <div key={game.id} className="group relative">
+                    {/* KUSTUTAMISE NUPP */}
+                    <button
+                      onClick={() => removeFromLibrary(game.id)}
+                      className="absolute -top-2 -right-2 bg-red-600 text-white p-2 rounded-none z-30 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border-2 border-[#050505]"
+                      title="Eemalda"
+                    >
+                      <X size={14} strokeWidth={3} />
+                    </button>
+
+                    <Link href={`/game/${game.id}`} className="block">
+                      <div className="aspect-[2/3] bg-white/5 overflow-hidden mb-4 relative border border-white/5 group-hover:border-orange-600/50 transition-colors">
+                        <img
+                          src={game.image}
+                          className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-500"
+                          alt={game.name}
+                        />
+
+                        {/* STAATUSMÄRGIS (Täpike) */}
+                        <div className={`absolute bottom-2 right-2 w-2 h-2 rounded-full shadow-[0_0_10px_rgba(0,0,0,1)] ${
+                          game.status === 'played' ? 'bg-green-500' : 'bg-orange-500'
+                        }`}></div>
                     </div>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 truncate">{game.name}</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 group-hover:text-white transition-colors truncate">
+                      {game.name}
+                    </p>
                   </Link>
+                </div>
                 ))}
              </div>
           </section>
