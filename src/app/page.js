@@ -61,7 +61,7 @@ export default function Home() {
         <header className="flex justify-between items-start mb-20 md:mb-40">
           <Link href="/" className="group">
             <img src="/logo.png" alt="Kardboord" className="h-12 md:h-20 w-auto grayscale group-hover:grayscale-0 transition-all" />
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-600 mt-2">Board Games Social Media App</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-600 mt-2">Gather. Play. Track.</p>
           </Link>
           <div className="text-right hidden md:block">
             <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest">Job Fair Edition</p>
