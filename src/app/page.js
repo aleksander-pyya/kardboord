@@ -42,7 +42,7 @@ export default function Home() {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!window.confirm("Kas oled kindel, et soovid selle mängu riiulist eemaldada?")) return;
+    if (!window.confirm("Are you sure, you want to remove this game from your library?")) return;
 
     const currentLib = JSON.parse(localStorage.getItem('myLibrary') || '[]');
     const newLib = currentLib.filter(item => String(item.id) !== String(id));
@@ -61,7 +61,7 @@ export default function Home() {
         <header className="flex justify-between items-start mb-20 md:mb-40">
           <Link href="/" className="group">
             <img src="/logo.png" alt="Kardboord" className="h-12 md:h-20 w-auto grayscale group-hover:grayscale-0 transition-all" />
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-600 mt-2">Digital Vault</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-600 mt-2">Board Games Social Media App</p>
           </Link>
           <div className="text-right hidden md:block">
             <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest">Job Fair Edition</p>
@@ -76,7 +76,7 @@ export default function Home() {
               type="text" 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="OTSI ANDMEBAASIST..." 
+              placeholder="SEARCH FOR BOARD GAMES..." 
               className="bg-transparent border-b-4 border-white/10 py-8 md:py-16 w-full outline-none focus:border-orange-600 transition-all text-3xl md:text-7xl font-black tracking-tighter placeholder:text-white/5 uppercase italic"
             />
             <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-6">
@@ -96,7 +96,7 @@ export default function Home() {
         {results.length > 0 && (
           <section className="mb-40 animate-in fade-in slide-in-from-bottom-8 duration-700">
             <div className="flex items-end justify-between mb-10 border-l-8 border-orange-600 pl-6">
-              <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none">Tulemused</h2>
+              <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none">Results</h2>
               <span className="text-orange-600 font-black text-xl md:text-2xl italic">/{results.length}</span>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-1 bg-white/5 border border-white/5">
@@ -123,7 +123,7 @@ export default function Home() {
               <Link href={`/game/${game.id}`} key={game.id} className="group relative aspect-video md:aspect-square overflow-hidden bg-white/5">
                 <img src={game.image} className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-all duration-1000 scale-110 group-hover:scale-100 grayscale group-hover:grayscale-0" alt={game.name} />
                 <div className="absolute inset-0 p-8 flex flex-col justify-between">
-                  <span className="text-xs font-black tracking-widest text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity">EXPLORE —&gt;</span>
+                  <span className="text-xs font-black tracking-widest text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity">LEARN MORE —&gt;</span>
                   <h3 className="text-2xl md:text-4xl font-black uppercase italic leading-none">{game.name}</h3>
                 </div>
               </Link>
@@ -135,8 +135,8 @@ export default function Home() {
         {(wishlistGames.length > 0 || playedGames.length > 0) && (
           <section className="border-t border-white/10 pt-20">
              <div className="flex items-center justify-between mb-12">
-               <h2 className="text-xs font-black uppercase tracking-[0.5em] text-white/20 text-orange-600">Sinu Riiul</h2>
-               <span className="text-[10px] font-bold text-white/10 uppercase italic">{myLibrary.length} mängu kokku</span>
+               <h2 className="text-xs font-black uppercase tracking-[0.5em] text-white/20 text-orange-600">Your shelf</h2>
+               <span className="text-[10px] font-bold text-white/10 uppercase italic">{myLibrary.length} games in total</span>
              </div>
 
              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-6 md:gap-10">
