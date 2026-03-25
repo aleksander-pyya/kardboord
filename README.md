@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# KARDBOORD / Digital Vault
+### Gather. Play. Track.
 
-## Getting Started
+**Kardboord** is a premium, minimalist web application designed for board game enthusiasts to curate their collections and track their tabletop experiences. Built with a focus on high-end typography and a "Brutalist" aesthetic, it turns a simple list into a digital vault.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 The Vision
+Board games are more than just cardboard boxes; they are the social glue of our gatherings. Kardboord is built to bridge the gap between your physical shelf and your digital life. 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> **"Collecting Games. Connecting People."**
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
+* **Framework:** [Next.js 14+](https://nextjs.org/) (App Router)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+* **Icons:** [Lucide React](https://lucide.dev/)
+* **Database/API:** [BoardGameGeek (BGG) API](https://boardgamegeek.com/wiki/page/BGG_XML_API2) integration
+* **Typography:** [Montserrat](https://fonts.google.com/specimen/Montserrat) (SemiBold & Black)
+* **Deployment:** [Vercel](https://vercel.com/)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Key Features
+* **Global Search:** Instant access to the massive BoardGameGeek database.
+* **Digital Backlog:** Manage your "Shelf of Opportunity" (unplayed games) with a sleek interface.
+* **Personal Vault:** Track your played games and rate your experiences.
+* **Brutalist UI:** A high-contrast, black-and-white-and-orange aesthetic that prioritizes content and speed.
+* **Responsive Design:** Fully optimized for mobile "at-the-table" use and desktop curation.
 
-## Learn More
+🎨 Design Philosophy
+Kardboord rejects the "soft and bubbly" AI-generated look. It utilizes:
 
-To learn more about Next.js, take a look at the following resources:
+Hard Edges: No excessive rounding, just sharp, authoritative containers.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+High Contrast: Deep #050505 backgrounds with punchy orange-600 accents.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Grayscale-to-Color: Imagery remains muted until interacted with, focusing the user's attention.
 
-## Deploy on Vercel
+👤 Author
+Aleksander Püüa
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+GitHub
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+LinkedIn
