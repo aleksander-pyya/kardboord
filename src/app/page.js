@@ -38,6 +38,21 @@ export default function Home() {
   const wishlistGames = myLibrary.filter(game => game.status === 'wishlist' || !game.status);
   const playedGames = myLibrary.filter(game => game.status === 'played');
 
+  const removeFromLibrary = (e, id) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!window.confirm("Kas oled kindel, et soovid selle mängu riiulist eemaldada?")) return;
+
+    const currentLib = JSON.parse(localStorage.getItem('myLibrary') || '[]');
+    const newLib = currentLib.filter(item => String(item.id) !== String(id));
+
+    setMyLibrary(newLib);
+    localStorage.setItem('myLibrary', JSON.stringify(newLib));
+
+    console.log("Eemaldatud mäng ID-ga:", id);
+  };
+
   return (
     <main className="min-h-screen bg-[#050505] text-white p-6 md:p-20 font-sans tracking-tight">
       <div className="max-w-[1400px] mx-auto">
@@ -129,11 +144,11 @@ export default function Home() {
                   <div key={game.id} className="group relative">
                     {/* KUSTUTAMISE NUPP */}
                     <button
-                      onClick={() => removeFromLibrary(game.id)}
-                      className="absolute -top-2 -right-2 bg-red-600 text-white p-2 rounded-none z-30 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border-2 border-[#050505]"
-                      title="Eemalda"
+                      onClick={(e) => removeFromLibrary(e, game.id)}
+                      className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-none z-50 opacity-100 transition-all border-2 border-[#050505] active:scale-90"
+                      type="button"
                     >
-                      <X size={14} strokeWidth={3} />
+                      <X size={16} strokeWidth={4} />
                     </button>
 
                     <Link href={`/game/${game.id}`} className="block">
