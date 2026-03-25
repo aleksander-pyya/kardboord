@@ -72,7 +72,7 @@ export default function Home() {
   );
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white p-4 md:p-12 font-sans tracking-tight pb-20">
+    <main className="min-h-screen bg-[#050505] text-white p-4 md:p-12 tracking-tight pb-20">
       <div className="max-w-7xl mx-auto">
         
         {/* --- LOGO --- */}

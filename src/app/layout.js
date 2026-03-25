@@ -4,7 +4,7 @@ import "./globals.css";
 // Seadistame Montserrati
 const montserrat = Montserrat({ 
   subsets: ["latin"],
-  weight: ["600", "900"], // 600 on SemiBold, 900 on see ülipaks Black efekt
+  weight: ["400", "600", "900"], // 600 on SemiBold, 900 on see ülipaks Black efekt
   variable: '--font-montserrat',
 });
 
