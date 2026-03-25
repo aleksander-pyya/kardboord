@@ -127,8 +127,8 @@ export default function GameDetail() {
                 <div className="bg-black/40 p-4 rounded-2xl border border-white/5">
                   <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3">Status</p>
                   <div className="flex gap-2">
-                    <button onClick={() => { setGameStatus('wishlist'); updateGameInLibrary({ status: 'wishlist' }); }} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${gameStatus === 'wishlist' ? 'bg-orange-600 text-white' : 'bg-white/5 text-gray-500'}`}>Mänguootel</button>
-                    <button onClick={() => { setGameStatus('played'); updateGameInLibrary({ status: 'played' }); }} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${gameStatus === 'played' ? 'bg-green-600 text-white' : 'bg-white/5 text-gray-500'}`}>Mängitud</button>
+                    <button onClick={() => { setGameStatus('wishlist'); updateGameInLibrary({ status: 'wishlist' }); }} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${gameStatus === 'wishlist' ? 'bg-orange-600 text-white' : 'bg-white/5 text-gray-500'}`}>To Play</button>
+                    <button onClick={() => { setGameStatus('played'); updateGameInLibrary({ status: 'played' }); }} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${gameStatus === 'played' ? 'bg-green-600 text-white' : 'bg-white/5 text-gray-500'}`}>Played</button>
                   </div>
                 </div>
               </div>
