@@ -12,7 +12,40 @@ export default function Home() {
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('myLibrary') || '[]');
-    setMyLibrary(saved);
+
+    // KUI RIIUL ON TÜHI, LISAME SOOVITATUD MÄNGE
+    if (saved.length === 0) {
+      const starterGames = [
+        {
+          id: "233078",
+          name: "Wingspan",
+          image: "/wingspan.jpg",
+          year: "2019",
+          status: "wishlist",
+          rating: 5
+        },
+        {
+          id: "1406",
+          name: "Monopoly",
+          image: "/monopoly.jpg",
+          year: "1933",
+          status: "played",
+          rating: 3
+        },
+        {
+          id: "13",
+          name: "Catan",
+          image: "/catan.jpg",
+          year: "1995",
+          status: "wishlist",
+          rating: 4
+        }
+      ];
+      setMyLibrary(starterGames);
+      localStorage.setItem('myLibrary', JSON.stringify(starterGames));
+    } else {
+      setMyLibrary(saved);
+    }
   }, []);
 
   const removeFromLibrary = (id) => {
