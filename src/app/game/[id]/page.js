@@ -12,9 +12,9 @@ export default function GameDetail() {
   const [gameStatus, setGameStatus] = useState(null);
 
   const demoGames = [
-    { id: "13", name: "Catan", image: "/catan.jpg", year: "1995", desc: "Embark on a journey to settle the uncharted island of Catan. In this modern classic, players compete to build settlements, roads, and cities by trading and managing resources like wool, grain, and lumber. Success depends on clever placement, shrewd trading, and a bit of luck with the dice. The race to 10 victory points starts here!", price: "34.99" },
-    { id: "233078", name: "Wingspan", image: "/wingspan.jpg", year: "2019", desc: "An award-winning, beautiful strategy game about bird enthusiasts—researchers, bird watchers, and collectors—seeking to discover and attract the best birds to their network of wildlife preserves. Each bird extends a chain of powerful combinations in your habitats. High-quality components and stunning artwork make this a peaceful yet deeply strategic engine-building experience", price: "49.50" },
-    { id: "1406", name: "Monopoly", image: "/monopoly.jpg", year: "1933", desc: "The world’s most famous real estate board game. Players buy, sell, and scheme their way to fortune as they move around the board, building houses and hotels on properties while collecting rent from opponents. A high-stakes game of luck and negotiation where the goal is simple: bankrupt your rivals and own it all.", price: "24.90" },
+    { id: "13", name: "Catan", image: "/catan.jpg", year: "1995", desc: "Embark on a journey to settle the uncharted island of Catan. In this modern classic, players compete to build settlements, roads, and cities by trading and managing resources like wool, grain, and lumber.", price: "34.90" },
+    { id: "233078", name: "Wingspan", image: "/wingspan.jpg", year: "2019", desc: "An award-winning strategy game about bird enthusiasts seeking to discover and attract the best birds to their network of wildlife preserves.", price: "49.50" },
+    { id: "1406", name: "Monopoly", image: "/monopoly.jpg", year: "1933", desc: "The world’s most famous real estate board game. Bankrupt your rivals and own it all.", price: "24.90" },
     { id: "174430", name: "Gloomhaven", image: "/catan.jpg", year: "2017", desc: "Massiivne taktikaline koopaseiklus sügava looga.", price: "120.00" }
   ];
 
@@ -22,7 +22,7 @@ export default function GameDetail() {
 
   useEffect(() => {
     const lib = JSON.parse(localStorage.getItem('myLibrary') || '[]');
-    const found = lib.find(item => item.id === id);
+    const found = lib.find(item => String(item.id) === String(id));
     if (found) {
       setAlreadyInLibrary(true);
       setUserRating(found.rating || 0);
@@ -32,7 +32,7 @@ export default function GameDetail() {
 
   const updateGameInLibrary = (updates) => {
     const lib = JSON.parse(localStorage.getItem('myLibrary') || '[]');
-    const index = lib.findIndex(item => item.id === id);
+    const index = lib.findIndex(item => String(item.id) === String(id));
     if (index !== -1) {
       lib[index] = { ...lib[index], ...updates };
       localStorage.setItem('myLibrary', JSON.stringify(lib));
@@ -41,100 +41,122 @@ export default function GameDetail() {
 
   const addToCollection = () => {
     const lib = JSON.parse(localStorage.getItem('myLibrary') || '[]');
-    if (!lib.find(item => item.id === game.id)) {
+    if (!lib.find(item => String(item.id) === String(game.id))) {
       const newGame = { ...game, rating: 0, status: 'wishlist' };
-      localStorage.setItem('myLibrary', JSON.stringify([...lib, newGame]));
+      const updatedLib = [...lib, newGame];
+      localStorage.setItem('myLibrary', JSON.stringify(updatedLib));
       setAlreadyInLibrary(true);
       setGameStatus('wishlist');
     }
   };
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white p-4 md:p-12 font-sans tracking-tight">
-      <div className="max-w-6xl mx-auto">
+    <main className="min-h-screen bg-[#050505] text-white p-6 md:p-20 font-sans tracking-tight">
+      <div className="max-w-[1400px] mx-auto">
         
-        {/* Tagasi nupp - väiksem mobiilis */}
-        <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-500 hover:text-white transition-all mb-6 md:mb-12 uppercase text-[9px] font-black tracking-widest">
-          <ArrowLeft size={14} /> Return
+        {/* RETURN BUTTON */}
+        <button onClick={() => router.back()} className="flex items-center gap-2 text-white/30 hover:text-orange-600 transition-all mb-12 uppercase text-[10px] font-black tracking-[0.3em]">
+          <ArrowLeft size={16} strokeWidth={3} /> Return to Vault
         </button>
 
-        <div className="grid lg:grid-cols-[400px_1fr] gap-8 md:gap-16">
+        <div className="grid lg:grid-cols-[450px_1fr] gap-12 md:gap-24">
           
-          {/* VASAK POOL: Pilt ja Ostunupud */}
-          <div className="space-y-6">
-            <div className="relative aspect-[4/3] md:aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-              <img src={game.image} className="w-full h-full object-cover" alt={game.name} />
+          {/* LEFT: Image & Price */}
+          <div className="space-y-8">
+            <div className="relative aspect-[3/4] overflow-hidden border-8 border-white/5 bg-white/5">
+              <img src={game.image} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt={game.name} />
             </div>
 
-            {/* OSTMISE SEKTSIOON - Kompaktne mobiilis */}
-            <div className="bg-[#111] p-5 md:p-8 rounded-3xl border border-white/5 space-y-4">
+            <div className="bg-white/5 p-8 border-l-4 border-orange-600 space-y-6">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ShoppingCart className="text-orange-500" size={16} />
-                  <h3 className="font-black uppercase italic text-[10px] tracking-wider">Buy the board game</h3>
-                </div>
-                <span className="text-lg font-black text-white">{game.price}€</span>
+                <p className="font-black uppercase italic text-xs tracking-widest text-white/40">Market Price</p>
+                <span className="text-3xl font-black text-white">{game.price}€</span>
               </div>
               
-              <div className="grid grid-cols-1 gap-2">
-                <a href="#" className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
-                  <span className="font-bold text-xs uppercase tracking-tighter">Brain Games</span>
-                  <ExternalLink size={12} className="text-orange-500" />
-                </a>
-              </div>
+              <a href="#" className="flex items-center justify-between p-4 bg-orange-600 hover:bg-orange-700 transition-colors text-white group">
+                <span className="font-black text-xs uppercase tracking-widest italic text-black">Acquire via Brain Games</span>
+                <ExternalLink size={16} className="text-black" strokeWidth={3} />
+              </a>
             </div>
           </div>
           
-          {/* PAREM POOL: Info */}
+          {/* RIGHT: Content */}
           <div className="flex flex-col">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="bg-orange-600/20 text-orange-500 px-3 py-1 rounded-full text-[9px] font-black uppercase border border-orange-500/20">{game.year}</span>
+            <div className="mb-6">
+              <span className="bg-white text-black px-4 py-1 font-black text-[10px] uppercase tracking-widest italic">{game.year}</span>
             </div>
 
-            {/* Pealkiri: 3xl mobiilis, 7xl desktopis */}
-            <h1 className="text-3xl md:text-7xl font-black italic uppercase tracking-tighter mb-4 md:mb-8 leading-tight">{game.name}</h1>
+            <h1 className="text-5xl md:text-9xl font-black italic uppercase tracking-tighter mb-8 leading-[0.85] text-white">
+              {game.name}
+            </h1>
             
-            <p className="text-gray-400 text-sm md:text-xl leading-relaxed mb-8 md:mb-12 font-medium opacity-80">{game.desc}</p>
+            <p className="text-white/50 text-lg md:text-2xl leading-tight mb-12 font-medium max-w-2xl border-l border-white/10 pl-8 italic">
+              {game.desc}
+            </p>
 
-            {/* TEGEVUSED */}
-            <div className="space-y-6 bg-white/[0.03] p-5 md:p-8 rounded-3xl border border-white/5">
-              <div className="flex flex-col sm:flex-row gap-3">
+            {/* ACTIONS */}
+            <div className="space-y-10">
+              <div className="flex flex-col sm:flex-row gap-4">
                 {!alreadyInLibrary ? (
-                  <button onClick={addToCollection} className="bg-orange-600 text-white font-black py-4 px-8 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest shadow-lg shadow-orange-600/20 w-full">
-                    <Library size={18} /> Add to shelf
+                  <button onClick={addToCollection} className="bg-white text-black font-black py-6 px-10 flex items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] hover:bg-orange-600 transition-colors w-full sm:w-auto">
+                    <Library size={20} strokeWidth={3} /> Add to shelf
                   </button>
                 ) : (
-                  <div className="flex items-center justify-center gap-2 bg-green-600/20 border border-green-500/30 text-green-500 font-black py-4 px-8 rounded-2xl text-[10px] uppercase tracking-widest w-full">
-                    <Check size={18} /> Added to your shelf
+                  <div className="flex items-center justify-center gap-3 border-2 border-green-500 text-green-500 font-black py-6 px-10 text-xs uppercase tracking-[0.2em] w-full sm:w-auto italic">
+                    <Check size={20} strokeWidth={3} /> In Your Vault
                   </div>
                 )}
-                <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Link copied!"); }} className="bg-white/5 text-white border border-white/10 font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest w-full sm:w-auto">
-                  <Share2 size={18} />
+                <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Link copied!"); }} className="border border-white/20 text-white hover:border-white py-6 px-8 flex items-center justify-center transition-all w-full sm:w-auto">
+                  <Share2 size={20} />
                 </button>
               </div>
 
-              {/* HINNANG JA STAATUS - Kõrvuti ka mobiilis */}
-              <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 transition-all duration-700 ${alreadyInLibrary ? 'opacity-100' : 'opacity-10 pointer-events-none'}`}>
-                <div className="bg-black/40 p-4 rounded-2xl border border-white/5">
-                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3">Your rating</p>
-                  <div className="flex gap-2">
+              {/* RATING & STATUS */}
+              <div className={`grid grid-cols-1 sm:grid-cols-2 gap-1 transition-all duration-700 ${alreadyInLibrary ? 'opacity-100' : 'opacity-5 pointer-events-none'}`}>
+                <div className="bg-white/5 p-6 border border-white/5">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-4">Assign Rating</p>
+                  <div className="flex gap-3">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} size={20} className="cursor-pointer" fill={star <= userRating ? "#f97316" : "none"} stroke={star <= userRating ? "#f97316" : "currentColor"} onClick={() => { setUserRating(star); updateGameInLibrary({ rating: star }); }} />
+                      <Star key={star} size={24} className="cursor-pointer transition-transform active:scale-90" fill={star <= userRating ? "#f97316" : "none"} stroke={star <= userRating ? "#f97316" : "white"} strokeWidth={2} onClick={() => { setUserRating(star); updateGameInLibrary({ rating: star }); }} />
                     ))}
                   </div>
                 </div>
 
-                <div className="bg-black/40 p-4 rounded-2xl border border-white/5">
-                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600 mb-3">Status</p>
+                <div className="bg-white/5 p-6 border border-white/5">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-4">Vault Status</p>
                   <div className="flex gap-2">
-                    <button onClick={() => { setGameStatus('wishlist'); updateGameInLibrary({ status: 'wishlist' }); }} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${gameStatus === 'wishlist' ? 'bg-orange-600 text-white' : 'bg-white/5 text-gray-500'}`}>To Play</button>
-                    <button onClick={() => { setGameStatus('played'); updateGameInLibrary({ status: 'played' }); }} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${gameStatus === 'played' ? 'bg-green-600 text-white' : 'bg-white/5 text-gray-500'}`}>Played</button>
+                    <button onClick={() => { setGameStatus('wishlist'); updateGameInLibrary({ status: 'wishlist' }); }} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest transition-all ${gameStatus === 'wishlist' ? 'bg-orange-600 text-white' : 'bg-white/5 text-white/20'}`}>Backlog</button>
+                    <button onClick={() => { setGameStatus('played'); updateGameInLibrary({ status: 'played' }); }} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest transition-all ${gameStatus === 'played' ? 'bg-green-600 text-white' : 'bg-white/5 text-white/20'}`}>Played</button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* FOOTER - NÜÜD MAINITI SEES */}
+        <footer className="mt-40 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 pb-20">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-[2px] w-8 bg-orange-600"></div>
+              <p className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">
+                Gather. <span className="text-orange-600">Play.</span> Track.
+              </p>
+            </div>
+            <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
+              © 2026 Aleksander Püüa. All rights reserved.
+            </p>
+          </div>
+
+          <div className="text-left md:text-right">
+            <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mb-1">
+              Data provided by BoardGameGeek
+            </p>
+            <p className="text-[10px] font-medium text-white/10 uppercase tracking-widest">
+              Built with Next.js & Tailwind CSS
+            </p>
+          </div>
+        </footer>
       </div>
     </main>
   );
