@@ -1,179 +1,162 @@
 "use client";
+import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { searchGames } from '@/lib/bgg';
-import Link from 'next/link';
-import { Search, Loader2, ArrowRight, X } from 'lucide-react';
+import { ArrowLeft, Star, Check, Library, ShoppingCart, ExternalLink, Share2 } from 'lucide-react';
 
-const recommendedGames = [
-  { id: "233078", name: "Wingspan", image: "/wingspan.jpg", year: "2019" },
-  { id: "1406", name: "Monopoly", image: "/monopoly.jpg", year: "1933"},
-  { id: "13", name: "Catan", image: "/catan.jpg", year: "1995" }
-];
+export default function GameDetail() {
+  const { id } = useParams();
+  const router = useRouter();
+  
+  const [alreadyInLibrary, setAlreadyInLibrary] = useState(false);
+  const [userRating, setUserRating] = useState(0);
+  const [gameStatus, setGameStatus] = useState(null);
 
-export default function Home() {
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [myLibrary, setMyLibrary] = useState([]);
+  const demoGames = [
+    { id: "13", name: "Catan", image: "/catan.jpg", year: "1995", desc: "Embark on a journey to settle the uncharted island of Catan. In this modern classic, players compete to build settlements, roads, and cities by trading and managing resources like wool, grain, and lumber.", price: "34.90" },
+    { id: "233078", name: "Wingspan", image: "/wingspan.jpg", year: "2019", desc: "An award-winning strategy game about bird enthusiasts seeking to discover and attract the best birds to their network of wildlife preserves.", price: "49.50" },
+    { id: "1406", name: "Monopoly", image: "/monopoly.jpg", year: "1933", desc: "The world’s most famous real estate board game. Bankrupt your rivals and own it all.", price: "24.90" },
+    { id: "174430", name: "Gloomhaven", image: "/gloomhaven.jpg", year: "2017", desc: "Massiivne taktikaline koopaseiklus sügava looga.", price: "120.00" }
+  ];
+
+  const game = demoGames.find(g => g.id === id) || demoGames[0];
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem('myLibrary') || '[]');
-    setMyLibrary(saved);
-  }, []);
+    const lib = JSON.parse(localStorage.getItem('myLibrary') || '[]');
+    const found = lib.find(item => String(item.id) === String(id));
+    if (found) {
+      setAlreadyInLibrary(true);
+      setUserRating(found.rating || 0);
+      setGameStatus(found.status || null);
+    }
+  }, [id]);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!query) return;
-    setLoading(true);
-    const games = await searchGames(query);
-    setResults(games);
-    setLoading(false);
+  const updateGameInLibrary = (updates) => {
+    const lib = JSON.parse(localStorage.getItem('myLibrary') || '[]');
+    const index = lib.findIndex(item => String(item.id) === String(id));
+    if (index !== -1) {
+      lib[index] = { ...lib[index], ...updates };
+      localStorage.setItem('myLibrary', JSON.stringify(lib));
+    }
   };
 
-  const clearSearch = () => {
-    setResults([]);
-    setQuery('');
-  };
-
-  const wishlistGames = myLibrary.filter(game => game.status === 'wishlist' || !game.status);
-  const playedGames = myLibrary.filter(game => game.status === 'played');
-
-  const removeFromLibrary = (e, id) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!window.confirm("Are you sure, you want to remove this game from your library?")) return;
-
-    const currentLib = JSON.parse(localStorage.getItem('myLibrary') || '[]');
-    const newLib = currentLib.filter(item => String(item.id) !== String(id));
-
-    setMyLibrary(newLib);
-    localStorage.setItem('myLibrary', JSON.stringify(newLib));
-
-    console.log("Eemaldatud mäng ID-ga:", id);
+  const addToCollection = () => {
+    const lib = JSON.parse(localStorage.getItem('myLibrary') || '[]');
+    if (!lib.find(item => String(item.id) === String(game.id))) {
+      const newGame = { ...game, rating: 0, status: 'wishlist' };
+      const updatedLib = [...lib, newGame];
+      localStorage.setItem('myLibrary', JSON.stringify(updatedLib));
+      setAlreadyInLibrary(true);
+      setGameStatus('wishlist');
+    }
   };
 
   return (
     <main className="min-h-screen bg-[#050505] text-white p-6 md:p-20 font-sans tracking-tight">
       <div className="max-w-[1400px] mx-auto">
         
-        {/* HEADER & LOGO */}
-        <header className="flex justify-between items-start mb-20 md:mb-40">
-          <Link href="/" className="group">
-            <img src="/logo.png" alt="Kardboord" className="h-12 md:h-20 w-auto grayscale group-hover:grayscale-0 transition-all" />
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-600 mt-2">Gather. Play. Track.</p>
-          </Link>
-          <div className="text-right hidden md:block">
-            <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest">Job Fair Edition</p>
-            <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest">v1.0.4</p>
+        {/* RETURN BUTTON */}
+        <button onClick={() => router.back()} className="flex items-center gap-2 text-white/30 hover:text-orange-600 transition-all mb-12 uppercase text-[10px] font-black tracking-[0.3em]">
+          <ArrowLeft size={16} strokeWidth={3} /> Return to Vault
+        </button>
+
+        <div className="grid lg:grid-cols-[450px_1fr] gap-12 md:gap-24">
+          
+          {/* LEFT: Image & Price */}
+          <div className="space-y-8">
+            <div className="relative aspect-[3/4] overflow-hidden border-8 border-white/5 bg-white/5">
+              <img src={game.image} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt={game.name} />
+            </div>
+
+            <div className="bg-white/5 p-8 border-l-4 border-orange-600 space-y-6">
+              <div className="flex items-center justify-between">
+                <p className="font-black uppercase italic text-xs tracking-widest text-white/40">Market Price</p>
+                <span className="text-3xl font-black text-white">{game.price}€</span>
+              </div>
+              
+              <a href="#" className="flex items-center justify-between p-4 bg-orange-600 hover:bg-orange-700 transition-colors text-white group">
+                <span className="font-black text-xs uppercase tracking-widest italic text-black">Acquire via Brain Games</span>
+                <ExternalLink size={16} className="text-black" strokeWidth={3} />
+              </a>
+            </div>
           </div>
-        </header>
-
-        {/* SEARCH BAR - NÜÜD ALATI FOOKUSES */}
-        <section className="mb-20">
-          <form onSubmit={handleSearch} className="relative group">
-            <input 
-              type="text" 
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="SEARCH GAMES..." 
-              className="bg-transparent border-b-4 border-white/10 py-8 md:py-16 w-full outline-none focus:border-orange-600 transition-all text-3xl md:text-7xl font-black tracking-tighter placeholder:text-white/5 uppercase italic"
-            />
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-6">
-              {results.length > 0 && (
-                <button type="button" onClick={clearSearch} className="text-white/20 hover:text-white transition-colors">
-                  <X size={40} strokeWidth={3} />
-                </button>
-              )}
-              <button type="submit" className="text-white/10 group-hover:text-orange-600 transition-colors">
-                {loading ? <Loader2 className="animate-spin" size={40} /> : <ArrowRight size={50} strokeWidth={3} />}
-              </button>
+          
+          {/* RIGHT: Content */}
+          <div className="flex flex-col">
+            <div className="mb-6">
+              <span className="bg-white text-black px-4 py-1 font-black text-[10px] uppercase tracking-widest italic">{game.year}</span>
             </div>
-          </form>
-        </section>
 
-        {/* 1. OTSINGUTULEMUSED (KÕIGE ÜLEVAL) */}
-        {results.length > 0 && (
-          <section className="mb-40 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="flex items-end justify-between mb-10 border-l-8 border-orange-600 pl-6">
-              <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none">Results</h2>
-              <span className="text-orange-600 font-black text-xl md:text-2xl italic">/{results.length}</span>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-1 bg-white/5 border border-white/5">
-              {results.map((game) => (
-                <Link href={`/game/${game.id}`} key={game.id} className="group bg-[#0c0c0c] relative aspect-[3/4] overflow-hidden">
-                  <img src={game.image} alt={game.name} className="w-full h-full object-cover opacity-40 group-hover:opacity-100 transition-all duration-700 grayscale group-hover:grayscale-0" />
-                  <div className="absolute inset-0 p-6 flex flex-col justify-end bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                    <h3 className="font-black text-sm md:text-xl uppercase italic leading-none">{game.name}</h3>
+            <h1 className="text-5xl md:text-9xl font-black italic uppercase tracking-tighter mb-8 leading-[0.85] text-white">
+              {game.name}
+            </h1>
+            
+            <p className="text-white/50 text-lg md:text-2xl leading-tight mb-12 font-medium max-w-2xl border-l border-white/10 pl-8 italic">
+              {game.desc}
+            </p>
+
+            {/* ACTIONS */}
+            <div className="space-y-10">
+              <div className="flex flex-col sm:flex-row gap-4">
+                {!alreadyInLibrary ? (
+                  <button onClick={addToCollection} className="bg-white text-black font-black py-6 px-10 flex items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] hover:bg-orange-600 transition-colors w-full sm:w-auto">
+                    <Library size={20} strokeWidth={3} /> Add to shelf
+                  </button>
+                ) : (
+                  <div className="flex items-center justify-center gap-3 border-2 border-green-500 text-green-500 font-black py-6 px-10 text-xs uppercase tracking-[0.2em] w-full sm:w-auto italic">
+                    <Check size={20} strokeWidth={3} /> In Your Vault
                   </div>
-                </Link>
-              ))}
+                )}
+                <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Link copied!"); }} className="border border-white/20 text-white hover:border-white py-6 px-8 flex items-center justify-center transition-all w-full sm:w-auto">
+                  <Share2 size={20} />
+                </button>
+              </div>
+
+              {/* RATING & STATUS */}
+              <div className={`grid grid-cols-1 sm:grid-cols-2 gap-1 transition-all duration-700 ${alreadyInLibrary ? 'opacity-100' : 'opacity-5 pointer-events-none'}`}>
+                <div className="bg-white/5 p-6 border border-white/5">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-4">Assign Rating</p>
+                  <div className="flex gap-3">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star key={star} size={24} className="cursor-pointer transition-transform active:scale-90" fill={star <= userRating ? "#f97316" : "none"} stroke={star <= userRating ? "#f97316" : "white"} strokeWidth={2} onClick={() => { setUserRating(star); updateGameInLibrary({ rating: star }); }} />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white/5 p-6 border border-white/5">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-4">Vault Status</p>
+                  <div className="flex gap-2">
+                    <button onClick={() => { setGameStatus('wishlist'); updateGameInLibrary({ status: 'wishlist' }); }} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest transition-all ${gameStatus === 'wishlist' ? 'bg-orange-600 text-white' : 'bg-white/5 text-white/20'}`}>Backlog</button>
+                    <button onClick={() => { setGameStatus('played'); updateGameInLibrary({ status: 'played' }); }} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest transition-all ${gameStatus === 'played' ? 'bg-green-600 text-white' : 'bg-white/5 text-white/20'}`}>Played</button>
+                  </div>
+                </div>
+              </div>
             </div>
-          </section>
-        )}
-
-        {/* 2. SOOVITUSED (ILMUVAD AINULT KUI EI OTSI VÕI ON OTSINGU ALL) */}
-        <section className="mb-40">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-l-8 border-white pl-6">
-            <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none">Kardboord<br/><span className="text-orange-600">Picks</span></h2>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-white/20 mt-6 md:mt-0">Top Rated / Featured</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            {recommendedGames.map(game => (
-              <Link href={`/game/${game.id}`} key={game.id} className="group relative aspect-video md:aspect-square overflow-hidden bg-white/5">
-                <img src={game.image} className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-all duration-1000 scale-110 group-hover:scale-100 grayscale group-hover:grayscale-0" alt={game.name} />
-                <div className="absolute inset-0 p-8 flex flex-col justify-between">
-                  <span className="text-xs font-black tracking-widest text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity">LEARN MORE —&gt;</span>
-                  <h3 className="text-2xl md:text-4xl font-black uppercase italic leading-none">{game.name}</h3>
-                </div>
-              </Link>
-            ))}
+        </div>
+
+        {/* FOOTER - NÜÜD MAINITI SEES */}
+        <footer className="mt-40 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 pb-20">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-[2px] w-8 bg-orange-600"></div>
+              <p className="text-[11px] font-black uppercase tracking-[0.4em] text-white italic">
+                Gather. <span className="text-orange-600">Play.</span> Track.
+              </p>
+            </div>
+            <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
+              © 2026 Aleksander Püüa. All rights reserved.
+            </p>
           </div>
-        </section>
 
-        {/* 3. KASUTAJA RIIUL */}
-        {(wishlistGames.length > 0 || playedGames.length > 0) && (
-          <section className="border-t border-white/10 pt-20">
-             <div className="flex items-center justify-between mb-12">
-               <h2 className="text-xs font-black uppercase tracking-[0.5em] text-white/20 text-orange-600">Your shelf</h2>
-               <span className="text-[10px] font-bold text-white/10 uppercase italic">{myLibrary.length} games in total</span>
-             </div>
-
-             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-6 md:gap-10">
-                {myLibrary.map(game => (
-                  <div key={game.id} className="group relative">
-                    {/* KUSTUTAMISE NUPP */}
-                    <button
-                      onClick={(e) => removeFromLibrary(e, game.id)}
-                      className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-none z-50 opacity-100 transition-all border-2 border-[#050505] active:scale-90"
-                      type="button"
-                    >
-                      <X size={16} strokeWidth={4} />
-                    </button>
-
-                    <Link href={`/game/${game.id}`} className="block">
-                      <div className="aspect-[2/3] bg-white/5 overflow-hidden mb-4 relative border border-white/5 group-hover:border-orange-600/50 transition-colors">
-                        <img
-                          src={game.image}
-                          className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-500"
-                          alt={game.name}
-                        />
-
-                        {/* STAATUSMÄRGIS (Täpike) */}
-                        <div className={`absolute bottom-2 right-2 w-2 h-2 rounded-full shadow-[0_0_10px_rgba(0,0,0,1)] ${
-                          game.status === 'played' ? 'bg-green-500' : 'bg-orange-500'
-                        }`}></div>
-                    </div>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 group-hover:text-white transition-colors truncate">
-                      {game.name}
-                    </p>
-                  </Link>
-                </div>
-                ))}
-             </div>
-          </section>
-        )}
-
+          <div className="text-left md:text-right">
+            <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mb-1">
+              Data provided by BoardGameGeek
+            </p>
+            <p className="text-[10px] font-medium text-white/10 uppercase tracking-widest">
+              Built with Next.js & Tailwind CSS
+            </p>
+          </div>
+        </footer>
       </div>
     </main>
   );
