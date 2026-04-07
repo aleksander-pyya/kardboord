@@ -1,59 +1,44 @@
 import { NextResponse } from 'next/server';
-import { XMLParser } from 'fast-xml-parser';
-
-const parser = new XMLParser({ 
-  ignoreAttributes: false, 
-  attributeNamePrefix: "" 
-});
+import fs from 'fs';
+import path from 'path';
+import Papa from 'papaparse';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get('query');
+  const query = searchParams.get('query')?.toLowerCase();
 
   if (!query) return NextResponse.json([]);
 
   try {
-    // 1. Otsime mänge nime järgi
-    const searchRes = await fetch(`https://boardgamegeek.com/xmlapi2/search?query=${encodeURIComponent(query)}&type=boardgame`, {
-      next: { revalidate: 3600 } // Cache'ime vastust 1 tund
+    const filePath = path.join(process.cwd(), 'boardgame_ranks.csv');
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+
+    const parsedData = Papa.parse(fileContent, {
+      header: true,
+      skipEmptyLines: true,
     });
-    const searchText = await searchRes.text();
-    const searchJson = parser.parse(searchText);
-    
-    let items = searchJson.items?.item;
-    if (!items) return NextResponse.json([]);
 
-    const itemsArray = Array.isArray(items) ? items : [items];
-    const limitedItems = itemsArray.slice(0, 10); // Võtame max 10 vastet
-    
-    // 2. Kuna otsing ei anna pilte, peame küsima detailid ID-de järgi
-    const ids = limitedItems.map(i => i.id).join(',');
-    const detailRes = await fetch(`https://boardgamegeek.com/xmlapi2/thing?id=${ids}`);
-    const detailText = await detailRes.text();
-    const detailJson = parser.parse(detailText);
-    
-    let details = detailJson.items?.item;
-    if (!details) return NextResponse.json([]);
-    const detailsArray = Array.isArray(details) ? details : [details];
-
-    const formatted = detailsArray.map(game => {
-      // BGG nimi võib olla massiiv (primary ja alternate)
-      const name = Array.isArray(game.name) 
-        ? game.name.find(n => n.type === 'primary')?.value 
-        : game.name.value;
-
-      return {
+    // Filtreerime: otsime nime järgi VÕI täpse ID järgi (detailvaate jaoks)
+    const results = parsedData.data
+      .filter(game => {
+        const name = (game.name || game.name || "").toLowerCase();
+        const id = String(game.id || game.id || "");
+        return name.includes(query) || id === query;
+      })
+      .slice(0, 15) // Piirame tulemusi, et brauseril oleks kerge
+      .map(game => ({
         id: game.id,
-        name: name || "Unknown Title",
-        image: game.image || game.thumbnail || "https://placehold.co/400x600?text=No+Image",
-        year: game.yearpublished?.value || "N/A",
-        desc: game.description ? game.description.substring(0, 150) + "..." : ""
-      };
-    });
+        name: game.name || "Unknown",
+        year: game.yearpublished || "N/A",
+        // BGG piltide loogika ID põhjal
+        image: `https://cf.geekdo-images.com/itemrep/img/P-p-p-p-p/pic${game.id}.jpg`,
+        rank: game.rank || "Unranked",
+        rating: game.average_rating || "0"
+      }));
 
-    return NextResponse.json(formatted);
+    return NextResponse.json(results);
   } catch (err) {
-    console.error("BGG API Error:", err);
+    console.error("CSV Error:", err);
     return NextResponse.json([]);
   }
 }
