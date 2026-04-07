@@ -1,76 +1,132 @@
 "use client";
-import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Star, Check, Library } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-export default function GameDetailPage() {
+export default function GameDetails() {
   const { id } = useParams();
   const router = useRouter();
   const [game, setGame] = useState(null);
-  const [alreadyInLibrary, setAlreadyInLibrary] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [added, setAdded] = useState(false);
+
+  // Varuvariant pildile
+  const fallbackImageUrl = `https://cf.geekdo-images.com/itemrep/img/id${id}-150.jpg`;
 
   useEffect(() => {
-    const fetchData = async () => {
-      // 1. Kontrolli localStoraget
-      const lib = JSON.parse(localStorage.getItem('myLibrary') || '[]');
-      const found = lib.find(item => String(item.id) === String(id));
-      
-      if (found) {
-        setGame(found);
-        setAlreadyInLibrary(true);
-      } else {
-        // 2. Küsi CSV-st ID kaudu
-        const res = await fetch(`/api/search?query=${id}`);
+    const fetchGameDetails = async () => {
+      try {
+        // Nüüd toob see üks päring nii andmed CSV-st kui ka pildi BGG-st
+        const res = await fetch(`/api/bgg?id=${id}`);
         const data = await res.json();
-        if (data.length > 0) setGame(data[0]);
+        
+        if (data.error) throw new Error(data.error);
+        
+        setGame(data);
+
+        // Kontrollime vaulti olekut
+        const saved = JSON.parse(localStorage.getItem('myLibrary') || '[]');
+        if (saved.some(g => String(g.id) === String(id))) {
+          setAdded(true);
+        }
+      } catch (err) {
+        console.error("Viga laadimisel:", err);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchData();
+
+    if (id) fetchGameDetails();
   }, [id]);
 
-  const addToLibrary = () => {
-    const lib = JSON.parse(localStorage.getItem('myLibrary') || '[]');
-    const newGame = { ...game, status: 'BACKLOG', rating: 0 };
-    localStorage.setItem('myLibrary', JSON.stringify([...lib, newGame]));
-    setAlreadyInLibrary(true);
+  const addToVault = () => {
+    const saved = JSON.parse(localStorage.getItem('myLibrary') || '[]');
+    
+    const gameToSave = {
+      id: game.id,
+      name: game.name,
+      year: game.yearpublished,
+      rank: game.rank,
+      image: game.image || fallbackImageUrl,
+      status: 'WANT TO PLAY'
+    };
+
+    if (!saved.some(g => String(g.id) === String(game.id))) {
+      const updated = [...saved, gameToSave];
+      localStorage.setItem('myLibrary', JSON.stringify(updated));
+      setAdded(true);
+      router.push('/');
+    }
   };
 
-  if (!game) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white font-black italic uppercase tracking-widest">Loading...</div>;
+  if (loading) return <div className="min-h-screen bg-black text-white p-20 font-black italic animate-pulse uppercase tracking-[0.5em]">Syncing Database...</div>;
+  if (!game) return <div className="min-h-screen bg-black text-white p-20 font-black italic text-center uppercase">Game Not Found.</div>;
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white p-6 md:p-20 font-sans italic selection:bg-orange-600">
-      <div className="max-w-[1400px] mx-auto">
-        <button onClick={() => router.push('/')} className="flex items-center gap-2 text-white/30 hover:text-orange-600 transition-all mb-12 uppercase text-[10px] font-black tracking-[0.4em]">
-          <ArrowLeft size={16} strokeWidth={3} /> Return to Vault
-        </button>
-
-        <div className="grid lg:grid-cols-[500px_1fr] gap-12 md:gap-24 mb-40">
-          <div className="relative aspect-[3/4] border-[12px] border-white/5 bg-white/5 overflow-hidden">
-            <img src={game.image} className="w-full h-full object-cover" alt={game.name} />
-          </div>
-
-          <div className="flex flex-col justify-center">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="bg-orange-600 text-black px-4 py-1 font-black text-xs uppercase italic">Rank #{game.rank}</span>
-              <span className="text-white/30 font-black text-xs uppercase tracking-widest">{game.year}</span>
+    <main className="min-h-screen bg-[#050505] text-white font-sans italic selection:bg-orange-600 p-6 md:p-20">
+      <Link href="/" className="text-orange-600 font-black uppercase tracking-[0.3em] text-[10px] mb-12 block hover:text-white transition-all">
+        ← BACK TO DATABASE
+      </Link>
+      
+      <div className="flex flex-col md:flex-row gap-12 md:gap-24">
+        {/* VASAK POOL: PILT */}
+        <div className="w-full md:w-1/3">
+          <div className="aspect-[3/4] bg-white/5 border border-white/10 relative group overflow-hidden">
+            <img 
+              src={game.image || fallbackImageUrl} 
+              alt={game.name}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              onError={(e) => {
+                e.target.src = fallbackImageUrl;
+                e.target.onerror = () => {
+                  e.target.src = "https://via.placeholder.com/600x800?text=IMAGE+NOT+FOUND";
+                };
+              }}
+            />
+            <div className="absolute top-0 right-0 bg-orange-600 text-black px-6 py-3 font-black text-4xl shadow-2xl z-10">
+              #{game.rank}
             </div>
-            
-            <h1 className="text-7xl md:text-[10rem] font-black uppercase tracking-tighter leading-[0.8] mb-12">{game.name}</h1>
-            
-            {!alreadyInLibrary ? (
-              <button onClick={addToLibrary} className="w-full md:w-max bg-white text-black font-black py-8 px-16 text-xl uppercase tracking-widest hover:bg-orange-600 transition-all transform active:scale-95">
-                Add to Shelf
-              </button>
-            ) : (
-              <div className="flex items-center gap-4 text-green-500 border-2 border-green-500 w-max px-12 py-6 font-black uppercase italic tracking-widest">
-                <Check size={24} /> Already in Vault
-              </div>
-            )}
           </div>
         </div>
-        
-        {/* Footer siia alla nagu alguses tegime */}
-      </div>
+
+        {/* PAREM POOL: INFO */}
+        <div className="w-full md:w-2/3 flex flex-col justify-between">
+          <div>
+            <h1 className="text-6xl md:text-[8vw] font-black uppercase tracking-tighter leading-[0.8] mb-8 break-words text-white">
+              {game.name}
+            </h1>
+            
+            <div className="flex flex-wrap gap-8 mb-12 border-y border-white/5 py-12">
+              <div>
+                <p className="text-[10px] font-black uppercase text-white/20 tracking-widest mb-4 italic">Release</p>
+                <p className="text-4xl font-black">{game.yearpublished}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase text-white/20 tracking-widest mb-4 italic">BGG Rating</p>
+                <p className="text-4xl font-black text-orange-600">{Number(game.average).toFixed(2)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase text-white/20 tracking-widest mb-4 italic">Voters</p>
+                <p className="text-4xl font-black">{game.usersrated?.toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+          
+             
+             <button 
+               onClick={addToVault}
+               disabled={added}
+               className={`w-full p-6 font-black uppercase text-xl transition-all duration-500 border-2 ${
+                 added 
+                 ? 'border-white/10 text-white/10 bg-transparent cursor-default' 
+                 : 'bg-orange-600 border-orange-600 text-black hover:bg-white hover:border-white shadow-[0_20px_50px_rgba(234,88,12,0.3)] hover:shadow-orange-600/50'
+               }`}
+             >
+               {added ? 'STASHED IN VAULT' : 'ADD TO PERSONAL VAULT'}
+             </button>
+          </div>
+        </div>
     </main>
   );
 }
